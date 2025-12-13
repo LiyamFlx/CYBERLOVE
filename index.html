@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="theme-color" content="#000000" />
+<title>CYBERLOVE — Relational Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --green-main: #00ff66;
+  --green-dim: #008844;
+  --green-accent: #00ffaa;
+  --pink-love: #ff4fd8;
+  --bg: #000000;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--green-main);
+  font-family: 'VT323', monospace;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* CRT Scanlines */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0) 4px
+  );
+  z-index: 999;
+}
+
+/* CRT Glow */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(0,255,120,0.12), transparent 65%);
+  z-index: 998;
+}
+
+.presentation {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-progress {
+  height: 3px;
+  background: rgba(0,255,120,0.15);
+}
+
+.top-progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--green-main);
+  box-shadow: 0 0 12px var(--green-main);
+  transition: width 0.3s ease;
+}
+
+.slide-counter {
+  position: fixed;
+  top: 10px;
+  right: 16px;
+  color: var(--green-dim);
+  z-index: 10;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px 90px;
+}
+
+.slide-container {
+  width: 100%;
+  max-width: 820px;
+}
+
+.slide {
+  animation: crt-flicker 120ms ease;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+.hero-title {
+  font-size: 72px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 4px rgba(0,255,0,0.6), 0 0 14px rgba(0,255,0,0.3);
+}
+
+.hero-tagline {
+  font-size: 36px;
+  margin-top: 8px;
+}
+
+.hero-subtitle {
+  margin-top: 40px;
+  color: var(--green-dim);
+  font-size: 22px;
+}
+
+.love {
+  color: var(--pink-love);
+  animation: pulse 2.4s infinite;
+}
+
+@keyframes pulse {
+  0% { text-shadow: 0 0 6px var(--green-main); }
+  50% { text-shadow: 0 0 16px var(--green-accent); }
+  100% { text-shadow: 0 0 6px var(--green-main); }
+}
+
+.slide-title {
+  font-size: 20px;
+  color: var(--green-dim);
+  margin-bottom: 6px;
+}
+
+.slide-headline {
+  font-size: 44px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.divider {
+  margin: 24px 0;
+  white-space: pre;
+  color: var(--green-dim);
+}
+
+.two-col {
+  display: flex;
+  gap: 48px;
+}
+
+ul { list-style: none; }
+li::before { content: "> "; color: var(--green-dim); }
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px dashed var(--green-main);
+  background: black;
+}
+
+button {
+  background: transparent;
+  border: 1px dashed var(--green-main);
+  color: var(--green-main);
+  font-family: inherit;
+  font-size: 22px;
+  padding: 8px 20px;
+}
+
+button.primary {
+  background: var(--green-main);
+  color: black;
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: 48px; }
+  .slide-headline { font-size: 30px; }
+  .two-col { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="presentation">
+  <div class="top-progress"><div class="top-progress-fill" id="progress"></div></div>
+  <div class="slide-counter"><span id="cur">1</span>/<span id="total">11</span></div>
+
+  <main class="main-content">
+    <div class="slide-container">
+      <div class="slide" id="slide"></div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button id="prev">&lt; BACK</button>
+    <button id="next" class="primary">NEXT &gt;</button>
+  </nav>
+</div>
+
+<script>
+const slides = [
+`<pre style="font-size:22px; line-height:1.4;">
+> INITIALIZING RELATIONAL INTERFACE
+> CALIBRATING EMOTIONAL SENSORS
+> LOADING ATTACHMENT MODELS
+> CHECKING SAFETY CONSTRAINTS
+> SYSTEM READY
+</pre>`,
+`<div class="hero-title">CYBERLOVE</div>
+ <div class="hero-tagline">Teaches machines how humans <span class="love">love</span>.</div>
+ <div class="hero-subtitle">Relational Intelligence Infrastructure for Embodied AI</div>`,
+
+`<div class="slide-title">THE PROBLEM</div>
+ <div class="slide-headline">Robots are learning to see, move, and act.<br>They are not learning how to connect.</div>
+ <div class="divider">----------------------------------------</div>
+ <div class="two-col">
+   <ul>
+     <li>Perception & navigation</li>
+     <li>Task execution</li>
+     <li>Physical manipulation</li>
+     <li>Safety constraints</li>
+   </ul>
+   <ul>
+     <li>Trust over time</li>
+     <li>Presence vs intrusion</li>
+     <li>Emotional repair</li>
+     <li>Feeling safe</li>
+   </ul>
+ </div>
+ <p style="margin-top:20px;">This is not a hardware problem.<br><span style="color:var(--green-accent)">It is missing training data.</span></p>`,
+
+`<div class="slide-title">THE INSIGHT</div>
+ <div class="slide-headline">Humans are forming their first emotional bonds with AI right now.</div>
+ <p>This behavioral data will never exist again.</p>
+ <div class="divider">----------------------------------------</div>
+ <div class="two-col">
+   <ul>
+     <li><strong>2024–2028</strong></li>
+     <li>Capture window</li>
+     <li>Unrestricted experimentation</li>
+     <li>Raw intimacy signal</li>
+   </ul>
+   <ul>
+     <li><strong>2028+</strong></li>
+     <li>Normalization</li>
+     <li>Users guarded</li>
+     <li>Learning phase ends</li>
+   </ul>
+ </div>
+ <p style="margin-top:20px;">AI companions • Avatars • Voice agents • Game NPCs</p>`,
+
+`<div class="slide-title">WHAT WE BUILD</div>
+ <div class="slide-headline">The relational intelligence layer robots cannot build.</div>
+ <div class="divider">----------------------------------------</div>
+ <ul>
+   <li><strong>Signal Capture</strong> — timing, escalation, attachment, rupture</li>
+   <li><strong>State Modeling</strong> — bond phase, trust stability, trajectory</li>
+   <li><strong>Behavior Conditioning</strong> — pacing, presence, safety</li>
+ </ul>
+ <p style="margin-top:20px;">We build the emotional cognition substrate beneath avatars and robots.</p>`,
+
+`<div class="slide-title">HOW IT WORKS</div>
+ <div class="slide-headline">From interaction data to licensable intelligence.</div>
+ <div class="divider">----------------------------------------</div>
+ <p>DATA → SIGNAL → MODEL → API</p>
+ <ul style="margin-top:16px;">
+   <li>Is the user bonding or withdrawing?</li>
+   <li>Is reassurance or autonomy needed?</li>
+   <li>Is emotional intensity rising too fast?</li>
+ </ul>`,
+
+`<div class="slide-title">WHY AVATARS FIRST</div>
+ <div class="slide-headline">Humans will not emotionally train robots first.</div>
+ <div class="divider">----------------------------------------</div>
+ <ul>
+   <li>Safe emotional experimentation</li>
+   <li>Attachment behaviors emerge</li>
+   <li>Boundaries discovered</li>
+   <li>Repair cycles observed</li>
+ </ul>
+ <p style="margin-top:20px;">Avatars train. Robots inherit.</p>`,
+
+`<div class="slide-title">THE ROBOTICS STACK</div>
+ <div class="slide-headline">Where Cyberlove fits.</div>
+ <div class="divider">----------------------------------------</div>
+ <pre style="font-size:22px; line-height:1.4;">
+ HUMAN
+   ↓
+ AVATAR / INTERFACE
+   ↓
+ CYBERLOVE LAYER
+ (Bond • Trust • Pacing)
+   ↓
+ ROBOT / SYSTEM
+ </pre>
+ <p style="margin-top:16px;">Plugs into Isaac, MuJoCo, digital twins</p>`,
+
+`<div class="slide-title">REGULATION & SAFETY</div>
+ <div class="slide-headline">Relational intelligence becomes mandatory.</div>
+ <div class="divider">----------------------------------------</div>
+ <ul>
+   <li>Emotional safety requirements emerging</li>
+   <li>Human–robot interaction standards forming</li>
+   <li>Auditability of social behavior</li>
+   <li>Prevention of emotional harm</li>
+ </ul>
+ <p style="margin-top:20px;">Cyberlove becomes compliance infrastructure.</p>`,
+
+`<div class="slide-title">MARKET OPPORTUNITY</div>
+ <div class="slide-headline">Relational intelligence is foundational.</div>
+ <div class="divider">----------------------------------------</div>
+ <ul>
+   <li>Humanoid robotics — $38B</li>
+   <li>Autonomous vehicles — $60B</li>
+   <li>Social robotics — $14B</li>
+ </ul>
+ <p style="margin-top:20px;">$112B+ total addressable market</p>`,
+
+`<div class="slide-title">BUSINESS MODEL</div>
+ <div class="slide-headline">Infrastructure-first.</div>
+ <div class="divider">----------------------------------------</div>
+ <ul>
+   <li>Data licensing (high margin)</li>
+   <li>Infrastructure APIs (recurring)</li>
+ </ul>`,
+
+`<div class="slide-title">DEFENSIBILITY</div>
+ <div class="slide-headline">This cannot be replicated.</div>
+ <div class="divider">----------------------------------------</div>
+ <ul>
+   <li>Temporal first-gen data</li>
+   <li>Cross-platform graphs</li>
+   <li>Abstraction IP</li>
+   <li>Compound learning</li>
+ </ul>`,
+
+`<div class="hero-title">CYBERLOVE</div>
+ <div class="hero-tagline">Teaches machines how humans <span class="love">love</span>.</div>
+ <div class="hero-subtitle">Built on data that will never exist again.<br>cybernetic.ai</div>`
+];
+
+let i = 0;
+const slide = document.getElementById('slide');
+const cur = document.getElementById('cur');
+const total = document.getElementById('total');
+const progress = document.getElementById('progress');
+
+total.textContent = slides.length;
+
+function render() {
+  slide.innerHTML = slides[i];
+  cur.textContent = i + 1;
+  progress.style.width = ((i + 1) / slides.length * 100) + '%';
+}
+
+document.getElementById('next').onclick = () => i < slides.length - 1 && (++i, render());
+document.getElementById('prev').onclick = () => i > 0 && (--i, render());
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') i < slides.length - 1 && (++i, render());
+  if (e.key === 'ArrowLeft') i > 0 && (--i, render());
+});
+
+render();
+</script>
+</body>
+</html>
