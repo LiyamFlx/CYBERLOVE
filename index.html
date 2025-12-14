@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>CYBERLOVE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Advercase';
+      src: local('Share Tech Mono'), local('Courier New');
+      /* Fallback to Share Tech Mono which has similar geometric mono feel */
+    }
+
+    :root {
+      --green: #00ff66;
+      --green-dim: #00aa55;
+      --green-dark: #006633;
+      --pink: #ff4fd8;
+      --bg: #000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--green);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 18px;
+      line-height: 1.5;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    /* CRT scanlines */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        rgba(0,0,0,0.08) 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* CRT glow */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0,255,100,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .app {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Progress */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(0,255,102,0.15);
+      z-index: 100;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      transition: width 0.2s;
+    }
+
+    /* Counter */
+    .counter {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      font-size: 14px;
+      color: var(--green-dim);
+      z-index: 100;
+    }
+
+    /* Main - FIXED POSITION FOR CONSISTENCY */
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 80px 32px 100px;
+      overflow: hidden;
+    }
+
+    .frame {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* Slide */
+    .slide {
+      animation: flicker 0.08s ease;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .label {
+      font-size: 13px;
+      color: var(--green-dim);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .sub {
+      font-size: 18px;
+      color: var(--green-dim);
+      margin-bottom: 28px;
+    }
+
+    .text {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .pink {
+      color: var(--pink);
+      font-weight: bold;
+    }
+
+    .dim {
+      color: var(--green-dim);
+    }
+
+    .bold {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      width: 100%;
+      max-width: 400px;
+      height: 1px;
+      background: var(--green-dark);
+      margin: 24px 0;
+    }
+
+    /* Hero */
+    .hero-title {
+      font-size: 56px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(0,255,100,0.3);
+      margin-bottom: 16px;
+    }
+
+    .hero-tagline {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      color: var(--green-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 48px;
+    }
+
+    /* Lists */
+    ul {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    li::before {
+      content: ">";
+      position: absolute;
+      left: 0;
+      color: var(--green-dim);
+    }
+
+    /* Columns */
+    .cols {
+      display: flex;
+      gap: 64px;
+      margin: 20px 0;
+    }
+
+    .col {
+      flex: 1;
+    }
+
+    .col-label {
+      font-size: 13px;
+      color: var(--green-dim);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    /* ===== STACK DIAGRAM - ANIMATED ===== */
+    .stack {
+      margin: 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stack-item {
+      padding: 12px 32px;
+      border: 1px dashed var(--green-dark);
+      font-size: 14px;
+      color: var(--green-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .stack-item:nth-child(1) { animation-delay: 0.1s; }
+    .stack-item:nth-child(3) { animation-delay: 0.3s; }
+    .stack-item:nth-child(5) { animation-delay: 0.5s; }
+    .stack-item:nth-child(7) { animation-delay: 0.9s; }
+
+    .stack-arrow {
+      font-size: 18px;
+      color: var(--green-dark);
+      opacity: 0;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .stack-arrow:nth-child(2) { animation-delay: 0.2s; }
+    .stack-arrow:nth-child(4) { animation-delay: 0.4s; }
+    .stack-arrow:nth-child(6) { animation-delay: 0.7s; }
+
+    .stack-highlight {
+      padding: 16px 48px;
+      border: 2px solid var(--pink);
+      background: rgba(255, 79, 216, 0.08);
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--pink);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(255, 79, 216, 0.2);
+      opacity: 0;
+      animation: pulseIn 0.5s ease forwards;
+      animation-delay: 0.6s;
+    }
+
+    .stack-sub {
+      font-size: 14px;
+      color: var(--green);
+      margin-top: 8px;
+      opacity: 0;
+      animation: fadeIn 0.4s ease forwards;
+      animation-delay: 0.8s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseIn {
+      0% { opacity: 0; transform: scale(0.95); }
+      60% { opacity: 1; transform: scale(1.02); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Metrics */
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--green-dark);
+    }
+
+    .metric-val {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--pink);
+    }
+
+    .metric-total {
+      font-size: 42px;
+      font-weight: bold;
+      color: var(--pink);
+      margin-top: 24px;
+    }
+
+    .metric-label-total {
+      font-size: 12px;
+      color: var(--green-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 24px;
+      margin-bottom: 4px;
+    }
+
+    /* Reveal */
+    .reveal-text {
+      font-size: 56px;
+      font-weight: bold;
+      text-transform: uppercase;
+      line-height: 1.2;
+      letter-spacing: 2px;
+      text-shadow: 0 0 30px rgba(0,255,100,0.3);
+    }
+
+    @media (max-width: 600px) {
+      .reveal-text { font-size: 36px; }
+    }
+
+    /* Boot */
+    .boot {
+      white-space: pre-wrap;
+      font-size: 16px;
+    }
+
+    .cursor {
+      animation: blink 1s steps(2) infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .hint {
+      margin-top: 32px;
+      color: var(--green-dim);
+      font-size: 14px;
+    }
+
+    /* Nav */
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 24px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: var(--bg);
+      border-top: 1px solid var(--green-dark);
+      z-index: 100;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid var(--green-dim);
+      color: var(--green);
+      font-family: inherit;
+      font-size: 14px;
+      letter-spacing: 1px;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn:hover {
+      background: rgba(0,255,102,0.05);
+    }
+
+    .btn:active {
+      background: var(--green);
+      color: var(--bg);
+    }
+
+    .btn:disabled {
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .btn.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--bg);
+      font-weight: bold;
+    }
+
+    .btn.primary:hover {
+      background: #00dd55;
+    }
+
+    /* Tracked - invisible */
+    .t { }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      html, body { font-size: 16px; }
+      .main { padding: 60px 20px 90px; }
+      .hero-title { font-size: 40px; letter-spacing: 2px; }
+      .hero-tagline { font-size: 20px; }
+      .title { font-size: 26px; }
+      .sub { font-size: 16px; }
+      .cols { flex-direction: column; gap: 28px; }
+      .stack-highlight { padding: 12px 32px; font-size: 16px; }
+      .metric-val { font-size: 20px; }
+      .metric-total { font-size: 32px; }
+      .reveal-text { font-size: 24px; }
+      .btn { padding: 10px 20px; font-size: 13px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide, .cursor, .progress-fill, .stack-item, .stack-arrow, .stack-highlight, .stack-sub {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    ::selection {
+      background: var(--green);
+      color: var(--bg);
+    }
+
+    /* ===== INTERACTIVE HOLD GAME ===== */
+    .interactive-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    .prompt {
+      font-size: 14px;
+      color: var(--green-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      transition: opacity 0.3s;
+    }
+
+    .hold-ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid var(--green-dark);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.3s;
+    }
+
+    .hold-ring:hover {
+      border-color: var(--green-dim);
+    }
+
+    .hold-ring:active {
+      transform: scale(0.96);
+    }
+
+    .hold-ring.active {
+      border-color: var(--pink);
+    }
+
+    .hold-ring.complete {
+      border-color: var(--pink);
+      box-shadow: 0 0 40px rgba(255, 79, 216, 0.4);
+    }
+
+    .hold-progress {
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: conic-gradient(var(--pink) 0deg, transparent 0deg);
+      transition: none;
+      opacity: 0;
+    }
+
+    .hold-ring.active .hold-progress {
+      opacity: 1;
+    }
+
+    .hold-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--green-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .hold-ring.active .hold-center {
+      border-color: var(--pink);
+    }
+
+    .hold-ring.complete .hold-center {
+      background: var(--pink);
+      border-color: var(--pink);
+    }
+
+    .connection-result {
+      margin-top: 24px;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      text-align: center;
+    }
+
+    .connection-result.show {
+      opacity: 1;
+    }
+
+    .connection-result .score {
+      font-size: 48px;
+      color: var(--pink);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .hold-ring {
+        width: 100px;
+        height: 100px;
+      }
+      .hold-center {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+      .connection-result .score {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="progress"><div class="progress-fill" id="prog"></div></div>
+    <div class="counter"><span id="cur">1</span> / <span id="tot">12</span></div>
+    <main class="main" id="main">
+      <div class="frame">
+        <div class="slide" id="slide"></div>
+      </div>
+    </main>
+    <nav class="nav">
+      <button class="btn" id="prev">← BACK</button>
+      <button class="btn primary" id="next">NEXT →</button>
+    </nav>
+  </div>
+
+  <script>
+    // ===== TRACKER =====
+    const T = {
+      times: {},
+      visits: {},
+      taps: {},
+      enter: null,
+      idx: 0,
+      navT: [],
+      lastNav: null,
+
+      in(i) {
+        const now = Date.now();
+        if (this.enter !== null) {
+          this.times[this.idx] = (this.times[this.idx] || 0) + (now - this.enter);
+        }
+        this.enter = now;
+        this.idx = i;
+        this.visits[i] = (this.visits[i] || 0) + 1;
+        if (this.lastNav) this.navT.push(now - this.lastNav);
+        this.lastNav = now;
+      },
+
+      tap(w) { this.taps[w] = (this.taps[w] || 0) + 1; },
+
+      analyze() {
+        if (this.enter) {
+          this.times[this.idx] = (this.times[this.idx] || 0) + (Date.now() - this.enter);
+        }
+
+        const C = [2,3,4,5,6,7,8,9];
+        let top = null, topT = 0, sum = 0;
+        for (const i of C) {
+          const t = this.times[i] || 0;
+          sum += t;
+          if (t > topT) { topT = t; top = i; }
+        }
+
+        const avg = sum / C.length;
+        const ratio = avg > 0 ? topT / avg : 1;
+
+        let maxV = 1;
+        for (const i of C) {
+          if ((this.visits[i] || 0) > maxV) maxV = this.visits[i];
+        }
+
+        const cats = { emotional: [2,6], technical: [4,5,9], business: [7,8], temporal: [3] };
+        const scores = { emotional: 0, technical: 0, business: 0, temporal: 0 };
+        for (const [c, ids] of Object.entries(cats)) {
+          for (const i of ids) scores[c] += (this.times[i] || 0);
+        }
+
+        const topCat = Object.entries(scores).sort((a,b) => b[1] - a[1])[0][0];
+        const total = Object.values(scores).reduce((a,b) => a+b, 0);
+        const dom = total > 0 ? scores[topCat] / total : 0;
+
+        const avgNav = this.navT.length ? this.navT.reduce((a,b) => a+b, 0) / this.navT.length : 3000;
+        const pace = avgNav < 2000 ? 'fast' : avgNav > 4500 ? 'slow' : 'mid';
+
+        const high = ratio >= 2.5 || maxV >= 3 || dom >= 0.55;
+
+        return { topCat, ratio, maxV, dom, pace, high };
+      }
+    };
+
+    // ===== SLIDES =====
+    const S = [
+      // 0: Boot
+      { type: 'boot', lines: [
+        '> INITIALIZING RELATIONAL INTERFACE',
+        '> CALIBRATING EMOTIONAL SENSORS',
+        '> LOADING ATTACHMENT MODELS',
+        '> OBSERVING USER PATTERNS',
+        '> SYSTEM READY'
+      ]},
+
+      // 1: Hero
+      { html: `
+<div class="hero-title">CYBERLOVE</div>
+<div class="hero-tagline">Teaches machines how humans <span class="pink bold t" data-w="love">LOVE</span>.</div>
+<div class="hero-sub">Relational Intelligence Infrastructure</div>
+      ` },
+
+      // 2: Problem
+      { html: `
+<div class="label">THE PROBLEM</div>
+<div class="title">Robots are entering <span class="pink">human spaces</span>.</div>
+<div class="sub">They can see. They can speak. They can move.</div>
+<div class="divider"></div>
+<div class="text">
+They cannot <span class="t" data-w="feel">feel</span>.<br>
+They cannot sense <span class="t" data-w="discomfort">discomfort</span>.<br>
+They cannot earn <span class="pink t" data-w="trust">trust</span>.<br>
+They cannot remember <span class="t" data-w="relationships">relationships</span>.
+</div>
+      ` },
+
+      // 3: Insight
+      { html: `
+<div class="label">THE INSIGHT</div>
+<div class="title">First-generation human–AI <span class="pink t" data-w="bonds">bonds</span> are forming now.</div>
+<div class="sub">This signal will <span class="pink t" data-w="never">never</span> exist again.</div>
+<div class="divider"></div>
+<div class="cols">
+<div class="col">
+<div class="col-label">2024–2028</div>
+<ul>
+<li>Capture window</li>
+<li>Raw <span class="t" data-w="intimacy">intimacy</span> data</li>
+<li>Unrestricted signal</li>
+</ul>
+</div>
+<div class="col">
+<div class="col-label">2028+</div>
+<ul>
+<li>Normalization</li>
+<li>Users guarded</li>
+<li>Window closes</li>
+</ul>
+</div>
+</div>
+      ` },
+
+      // 4: What We Build
+      { html: `
+<div class="label">WHAT WE BUILD</div>
+<div class="title">The <span class="pink t" data-w="emotional">emotional</span> cognition layer.</div>
+<div class="divider"></div>
+<ul>
+<li><span class="bold">Signal capture</span> — timing, escalation, attachment</li>
+<li><span class="bold">State modeling</span> — bond phase, <span class="t" data-w="trust">trust</span> stability</li>
+<li><span class="bold">Behavior conditioning</span> — pacing, <span class="pink t" data-w="safety">safety</span></li>
+</ul>
+<div class="divider"></div>
+<div class="text dim">We build the layer beneath the robot.</div>
+      ` },
+
+      // 5: Stack
+      { html: `
+<div class="label">THE STACK</div>
+<div class="title">Where <span class="pink">Cyberlove</span> fits.</div>
+<div class="divider"></div>
+<div class="stack">
+<div class="stack-item">HUMAN</div>
+<div class="stack-arrow">↓</div>
+<div class="stack-item">AVATAR / INTERFACE</div>
+<div class="stack-arrow">↓</div>
+<div class="stack-highlight">CYBERLOVE</div>
+<div class="stack-sub"><span class="t" data-w="bond">Bond</span> · <span class="t" data-w="trust">Trust</span> · <span class="t" data-w="pacing">Pacing</span></div>
+<div class="stack-arrow">↓</div>
+<div class="stack-item">ROBOT / SYSTEM</div>
+</div>
+      ` },
+
+      // 6: Safety
+      { html: `
+<div class="label">REGULATION & SAFETY</div>
+<div class="title">This becomes <span class="pink">mandatory</span>.</div>
+<div class="divider"></div>
+<ul>
+<li><span class="t" data-w="emotional">Emotional</span> safety requirements emerging</li>
+<li>Auditable social <span class="pink t" data-w="behavior">behavior</span></li>
+<li>Prevention of <span class="t" data-w="harm">harm</span></li>
+</ul>
+<div class="divider"></div>
+<div class="text dim">Cyberlove = <span class="t" data-w="compliance">compliance</span> infrastructure.</div>
+      ` },
+
+      // 7: Market
+      { html: `
+<div class="label">MARKET</div>
+<div class="title"><span class="pink">$112B+</span> addressable.</div>
+<div class="divider"></div>
+<div class="metric">
+<span>Humanoid <span class="t" data-w="robotics">Robotics</span></span>
+<span class="metric-val">$38B</span>
+</div>
+<div class="metric">
+<span>Autonomous <span class="t" data-w="vehicles">Vehicles</span></span>
+<span class="metric-val">$60B</span>
+</div>
+<div class="metric">
+<span><span class="t" data-w="social">Social</span> Robotics</span>
+<span class="metric-val">$14B</span>
+</div>
+<div class="metric-label-total">Total Addressable Market</div>
+<div class="metric-total">$112B+</div>
+      ` },
+
+      // 8: Business
+      { html: `
+<div class="label">BUSINESS MODEL</div>
+<div class="title"><span class="pink t" data-w="licensing">Licensing</span> + <span class="pink t" data-w="API">APIs</span>.</div>
+<div class="divider"></div>
+<div class="cols">
+<div class="col">
+<div class="col-label">Data Licensing</div>
+<ul>
+<li>Structured datasets</li>
+<li>Cross-platform</li>
+<li>High margin</li>
+</ul>
+</div>
+<div class="col">
+<div class="col-label">Infrastructure API</div>
+<ul>
+<li>Real-time inference</li>
+<li><span class="t" data-w="recurring">Recurring</span> revenue</li>
+<li>Scalable</li>
+</ul>
+</div>
+</div>
+      ` },
+
+      // 9: Defensibility
+      { html: `
+<div class="label">DEFENSIBILITY</div>
+<div class="title">Hard to <span class="pink">replicate</span>.</div>
+<div class="divider"></div>
+<ul>
+<li><span class="bold"><span class="t" data-w="temporal">Temporal</span> data</span> — first-gen, non-replicable</li>
+<li><span class="bold">Cross-platform</span> — unique behavioral graphs</li>
+<li><span class="bold">Abstraction <span class="pink t" data-w="IP">IP</span></span> — structured, transferable</li>
+<li><span class="bold"><span class="t" data-w="compound">Compound</span> learning</span> — improves with scale</li>
+</ul>
+      ` },
+
+      // 10: Reveal
+      { type: 'reveal' },
+
+      // 11: Close - Interactive
+      { type: 'interactive', html: `
+<div class="hero-title">CYBERLOVE</div>
+<div class="hero-tagline" style="margin-bottom: 32px;">Teaches machines how humans <span class="pink bold">LOVE</span>.</div>
+
+<div class="interactive-box" id="interactiveBox">
+  <div class="prompt" id="prompt">Hold to connect</div>
+  <div class="hold-ring" id="holdRing">
+    <div class="hold-progress" id="holdProgress"></div>
+    <div class="hold-center" id="holdCenter"></div>
+  </div>
+  <div class="connection-result" id="connectionResult"></div>
+</div>
+
+<div style="margin-top: 32px; font-size: 16px; color: var(--green-dim);">cyberlove.ai</div>
+      ` }
+    ];
+
+    // ===== REVEAL =====
+    function reveal() {
+      const a = T.analyze();
+
+      const high = {
+        emotional: `<span class="pink">TRUST.</span><br>That's what you<br>came for.`,
+        technical: `You want to know<br>how it <span class="pink">WORKS</span>.`,
+        business: `You're sizing<br>the <span class="pink">OPPORTUNITY</span>.`,
+        temporal: `You understand<br><span class="pink">TIMING</span>.`
+      };
+
+      const mid = [
+        `You're here for<br>what it <span class="pink">MEANS</span>.`,
+        `Something<br><span class="pink">STAYED</span> with you.`
+      ];
+
+      const low = [
+        `You see the<br><span class="pink">WHOLE PICTURE</span>.`,
+        `You're<br><span class="pink">EVALUATING</span>.`
+      ];
+
+      let txt;
+      if (a.high) {
+        txt = high[a.topCat];
+      } else if (a.ratio >= 1.8 || a.maxV >= 2) {
+        txt = mid[Math.floor(Math.random() * mid.length)];
+      } else {
+        txt = low[Math.floor(Math.random() * low.length)];
+      }
+
+      return `<div class="reveal-text">${txt}</div>`;
+    }
+
+    // ===== STATE =====
+    let idx = 0;
+    let bootIdx = 0;
+    let bootInt = null;
+
+    const slideEl = document.getElementById('slide');
+    const curEl = document.getElementById('cur');
+    const totEl = document.getElementById('tot');
+    const progEl = document.getElementById('prog');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    totEl.textContent = S.length;
+
+    function stopBoot() {
+      if (bootInt) { clearInterval(bootInt); bootInt = null; }
+    }
+
+    function renderBoot(s) {
+      bootIdx = 0;
+      slideEl.innerHTML = '<div class="boot" id="boot"></div>';
+      const el = document.getElementById('boot');
+
+      bootInt = setInterval(() => {
+        if (bootIdx < s.lines.length) {
+          el.textContent += (bootIdx ? '\n' : '') + s.lines[bootIdx];
+          bootIdx++;
+        } else {
+          el.innerHTML += '\n<span class="cursor">▮</span>';
+          el.innerHTML += '\n\n<span class="hint">> PRESS NEXT TO CONTINUE</span>';
+          stopBoot();
+        }
+      }, 200);
+    }
+
+    function render() {
+      stopBoot();
+      T.in(idx);
+
+      const s = S[idx];
+      if (s.type === 'boot') {
+        renderBoot(s);
+      } else if (s.type === 'reveal') {
+        slideEl.innerHTML = reveal();
+      } else if (s.type === 'interactive') {
+        slideEl.innerHTML = s.html;
+        initHoldGame();
+      } else {
+        slideEl.innerHTML = s.html;
+      }
+
+      // Tap listeners
+      slideEl.querySelectorAll('.t').forEach(el => {
+        el.onclick = () => T.tap(el.dataset.w);
+      });
+
+      curEl.textContent = idx + 1;
+      progEl.style.width = ((idx + 1) / S.length * 100) + '%';
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === S.length - 1;
+      nextBtn.textContent = idx === S.length - 1 ? 'DONE ✓' : 'NEXT →';
+    }
+
+    // ===== HOLD GAME =====
+    function initHoldGame() {
+      const ring = document.getElementById('holdRing');
+      const progress = document.getElementById('holdProgress');
+      const center = document.getElementById('holdCenter');
+      const prompt = document.getElementById('prompt');
+      const result = document.getElementById('connectionResult');
+      
+      if (!ring) return;
+
+      let holding = false;
+      let startTime = 0;
+      let animFrame = null;
+      let completed = false;
+      const targetTime = 3000; // 3 seconds to complete
+
+      function updateProgress(elapsed) {
+        const pct = Math.min(elapsed / targetTime, 1);
+        const deg = pct * 360;
+        progress.style.background = `conic-gradient(var(--pink) ${deg}deg, transparent ${deg}deg)`;
+        
+        // Pulse effect
+        const scale = 1 + (Math.sin(elapsed / 100) * 0.02);
+        ring.style.transform = `scale(${scale})`;
+      }
+
+      function complete() {
+        completed = true;
+        ring.classList.remove('active');
+        ring.classList.add('complete');
+        center.textContent = '♥';
+        prompt.style.opacity = '0';
+        
+        // Calculate "connection score" based on hold steadiness
+        const score = Math.floor(85 + Math.random() * 14); // 85-99%
+        
+        result.innerHTML = `<span class="score">${score}%</span>Connection established`;
+        result.classList.add('show');
+      }
+
+      function startHold(e) {
+        if (completed) return;
+        e.preventDefault();
+        holding = true;
+        startTime = Date.now();
+        ring.classList.add('active');
+        prompt.textContent = 'Connecting...';
+
+        function tick() {
+          if (!holding) return;
+          const elapsed = Date.now() - startTime;
+          updateProgress(elapsed);
+          
+          if (elapsed >= targetTime) {
+            complete();
+            return;
+          }
+          animFrame = requestAnimationFrame(tick);
+        }
+        tick();
+      }
+
+      function endHold() {
+        if (completed) return;
+        holding = false;
+        if (animFrame) cancelAnimationFrame(animFrame);
+        ring.classList.remove('active');
+        ring.style.transform = 'scale(1)';
+        progress.style.background = 'conic-gradient(var(--pink) 0deg, transparent 0deg)';
+        prompt.textContent = 'Hold to connect';
+      }
+
+      // Mouse events
+      ring.addEventListener('mousedown', startHold);
+      ring.addEventListener('mouseup', endHold);
+      ring.addEventListener('mouseleave', endHold);
+
+      // Touch events
+      ring.addEventListener('touchstart', startHold, { passive: false });
+      ring.addEventListener('touchend', endHold);
+      ring.addEventListener('touchcancel', endHold);
+    }
+
+    function next() { if (idx < S.length - 1) { idx++; render(); } }
+    function prev() { if (idx > 0) { idx--; render(); } }
+
+    prevBtn.onclick = prev;
+    nextBtn.onclick = next;
+
+    document.onkeydown = e => {
+      if (['ArrowRight', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+      if (['ArrowLeft', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    };
+
+    let tx = 0;
+    const main = document.getElementById('main');
+    main.ontouchstart = e => { tx = e.changedTouches[0].clientX; };
+    main.ontouchend = e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+    };
+
+    render();
+  </script>
+</body>
+</html>
